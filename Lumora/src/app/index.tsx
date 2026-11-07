@@ -1,98 +1,109 @@
-import * as Device from 'expo-device';
-import { Platform, StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { Link } from 'expo-router';
+import { StyleSheet, Text, View } from 'react-native';
 
-import { AnimatedIcon } from '@/components/animated-icon';
-import { HintRow } from '@/components/hint-row';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { WebBadge } from '@/components/web-badge';
-import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
+import { ActionButton, Brand, Card, Page } from '@/components/lumora-ui';
+import { Fonts, LumoraColors } from '@/constants/theme';
 
-function getDevMenuHint() {
-  if (Platform.OS === 'web') {
-    return <ThemedText type="small">use browser devtools</ThemedText>;
-  }
-  if (Device.isDevice) {
-    return (
-      <ThemedText type="small">
-        shake device or press <ThemedText type="code">m</ThemedText> in terminal
-      </ThemedText>
-    );
-  }
-  const shortcut = Platform.OS === 'android' ? 'cmd+m (or ctrl+m)' : 'cmd+d';
+const tagline = 'Through every moment, keep the light.';
+
+export default function WelcomeScreen() {
   return (
-    <ThemedText type="small">
-      press <ThemedText type="code">{shortcut}</ThemedText>
-    </ThemedText>
-  );
-}
+    <Page>
+      <View style={styles.top}>
+        <Brand />
+      </View>
 
-export default function HomeScreen() {
-  return (
-    <ThemedView style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
-        <ThemedView style={styles.heroSection}>
-          <AnimatedIcon />
-          <ThemedText type="title" style={styles.title}>
-            Welcome to&nbsp;Expo
-          </ThemedText>
-        </ThemedView>
+      <View style={styles.hero}>
+        <View style={styles.lightMark}>
+          <View style={styles.lightCore} />
+        </View>
+        <Text style={styles.title}>{tagline}</Text>
+        <Text style={styles.description}>
+          A private space for you and your family to hold close the moments that matter.
+        </Text>
+      </View>
 
-        <ThemedText type="code" style={styles.code}>
-          get started
-        </ThemedText>
-
-        <ThemedView type="backgroundElement" style={styles.stepContainer}>
-          <HintRow
-            title="Try editing"
-            hint={<ThemedText type="code">src/app/index.tsx</ThemedText>}
-          />
-          <HintRow title="Dev tools" hint={getDevMenuHint()} />
-          <HintRow
-            title="Fresh start"
-            hint={<ThemedText type="code">npm run reset-project</ThemedText>}
-          />
-        </ThemedView>
-
-        {Platform.OS === 'web' && <WebBadge />}
-      </SafeAreaView>
-    </ThemedView>
+      <Card style={styles.welcomeCard}>
+        <Text style={styles.welcomeTitle}>A little more light, together.</Text>
+        <Text style={styles.welcomeCopy}>
+          However today feels, you belong here. Make room for memories, feelings, and the people
+          beside you.
+        </Text>
+        <Link href="/home" asChild>
+          <ActionButton>Create an account</ActionButton>
+        </Link>
+        <Link href="/home" asChild>
+          <ActionButton secondary>Sign in</ActionButton>
+        </Link>
+        <Text style={styles.localNote}>Preview mode · no account needed</Text>
+      </Card>
+    </Page>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    flexDirection: 'row',
+  top: {
+    paddingTop: 8,
   },
-  safeArea: {
-    flex: 1,
-    paddingHorizontal: Spacing.four,
+  hero: {
     alignItems: 'center',
-    gap: Spacing.three,
-    paddingBottom: BottomTabInset + Spacing.three,
-    maxWidth: MaxContentWidth,
+    paddingTop: 12,
+    gap: 16,
   },
-  heroSection: {
+  lightMark: {
+    width: 96,
+    height: 96,
+    borderRadius: 48,
+    backgroundColor: '#EBDDEB',
     alignItems: 'center',
     justifyContent: 'center',
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    gap: Spacing.four,
+  },
+  lightCore: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: LumoraColors.primary,
+    opacity: 0.88,
   },
   title: {
+    maxWidth: 430,
+    color: LumoraColors.primaryText,
+    fontFamily: Fonts.serif,
+    fontSize: 38,
+    fontWeight: '600',
+    lineHeight: 46,
     textAlign: 'center',
   },
-  code: {
-    textTransform: 'uppercase',
+  description: {
+    maxWidth: 420,
+    color: LumoraColors.secondaryText,
+    fontFamily: Fonts.sans,
+    fontSize: 16,
+    lineHeight: 24,
+    textAlign: 'center',
   },
-  stepContainer: {
-    gap: Spacing.three,
-    alignSelf: 'stretch',
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.four,
-    borderRadius: Spacing.four,
+  welcomeCard: {
+    backgroundColor: '#FFFFFF',
+    padding: 24,
+  },
+  welcomeTitle: {
+    color: LumoraColors.primaryText,
+    fontFamily: Fonts.serif,
+    fontSize: 23,
+    fontWeight: '600',
+    lineHeight: 30,
+  },
+  welcomeCopy: {
+    color: LumoraColors.secondaryText,
+    fontFamily: Fonts.sans,
+    fontSize: 15,
+    lineHeight: 23,
+  },
+  localNote: {
+    color: LumoraColors.secondaryText,
+    fontFamily: Fonts.sans,
+    fontSize: 12,
+    textAlign: 'center',
+    paddingTop: 2,
   },
 });
