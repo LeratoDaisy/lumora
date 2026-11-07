@@ -1,12 +1,21 @@
-import { Link } from 'expo-router';
+import { Link, router } from 'expo-router';
+import { useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { ActionButton, Brand, Card, Page } from '@/components/lumora-ui';
 import { Fonts, LumoraColors } from '@/constants/theme';
+import { useOnboarding } from '@/contexts/onboarding-context';
 
 const tagline = 'Through every moment, keep the light.';
 
 export default function WelcomeScreen() {
+  const { profile, isLoaded, loadError } = useOnboarding();
+  const [signInMessage, setSignInMessage] = useState('');
+
+  useEffect(() => {
+    if (isLoaded && profile.completed) router.replace('/home');
+  }, [isLoaded, profile.completed]);
+
   return (
     <Page>
       <View style={styles.top}>
@@ -29,13 +38,25 @@ export default function WelcomeScreen() {
           However today feels, you belong here. Make room for memories, feelings, and the people
           beside you.
         </Text>
-        <Link href="/home" asChild>
+        <Link href="./create-account" asChild>
           <ActionButton>Create an account</ActionButton>
         </Link>
-        <Link href="/home" asChild>
-          <ActionButton secondary>Sign in</ActionButton>
-        </Link>
-        <Text style={styles.localNote}>Preview mode · no account needed</Text>
+        <ActionButton
+          secondary
+          onPress={() => {
+            if (profile.completed) {
+              router.replace('/home');
+            } else {
+              setSignInMessage('Sign in is not connected in this demo yet. Create a demo account to continue.');
+            }
+          }}>
+          Sign in
+        </ActionButton>
+        {signInMessage ? <Text style={styles.signInMessage}>{signInMessage}</Text> : null}
+        {loadError ? <Text style={styles.signInMessage}>{loadError}</Text> : null}
+        <Text style={styles.localNote}>
+          Demo only · Email and password are not saved
+        </Text>
       </Card>
     </Page>
   );
@@ -105,5 +126,12 @@ const styles = StyleSheet.create({
     fontSize: 12,
     textAlign: 'center',
     paddingTop: 2,
+  },
+  signInMessage: {
+    color: LumoraColors.secondaryText,
+    fontFamily: Fonts.sans,
+    fontSize: 13,
+    lineHeight: 19,
+    textAlign: 'center',
   },
 });

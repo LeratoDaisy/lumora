@@ -3,6 +3,7 @@ import { Text } from 'react-native';
 
 import { ActionButton, Card, EmptyState, Heading, Page, SectionLabel } from '@/components/lumora-ui';
 import { Fonts, LumoraColors } from '@/constants/theme';
+import { useOnboarding } from '@/contexts/onboarding-context';
 
 type Memory = {
   id: string;
@@ -14,6 +15,7 @@ type Memory = {
 const memories: Memory[] = [];
 
 export default function LightbookScreen() {
+  const { profile } = useOnboarding();
   const privateMemories = memories.filter((memory) => !memory.shared);
 
   return (
@@ -29,11 +31,19 @@ export default function LightbookScreen() {
           Only you can see these until you choose to share them.
         </Text>
         {privateMemories.length === 0 ? (
-          <EmptyState
-            title="Your memories will find a home here"
-            description="Keep a moment, a story, or anything you would like to hold on to."
-            action={<ActionButton>Create a memory</ActionButton>}
-          />
+          <>
+            <EmptyState
+              title="Your memories will find a home here"
+              description="Keep a moment, a story, or anything you would like to hold on to."
+            />
+            {profile.role === 'Caregiver' ? (
+              <Text style={styles.note}>
+                Caregiver access is invited-only. Memory creation is not available for this role.
+              </Text>
+            ) : (
+              <ActionButton>Create a memory</ActionButton>
+            )}
+          </>
         ) : (
           privateMemories.map((memory) => (
             <Card key={memory.id}>

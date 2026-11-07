@@ -17,6 +17,7 @@ export function Page({ children }: PropsWithChildren) {
     <SafeAreaView edges={['top']} style={styles.safeArea}>
       <ScrollView
         contentContainerStyle={styles.page}
+        keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}>
         {children}
       </ScrollView>
@@ -64,20 +65,24 @@ export function ActionButton({
   children,
   secondary = false,
   onPress,
+  disabled,
   style,
 }: PropsWithChildren<{
   secondary?: boolean;
   onPress?: () => void;
+  disabled?: boolean;
   style?: StyleProp<ViewStyle>;
 }>) {
   return (
     <Pressable
       accessibilityRole="button"
       onPress={onPress}
+      disabled={disabled}
       style={({ pressed }) => [
         styles.button,
         secondary ? styles.secondaryButton : styles.primaryButton,
         pressed && styles.pressed,
+        disabled && styles.disabled,
         style,
       ]}>
       <Text style={[styles.buttonText, secondary && styles.secondaryButtonText]}>
@@ -221,6 +226,9 @@ const styles = StyleSheet.create({
   },
   pressed: {
     opacity: 0.8,
+  },
+  disabled: {
+    opacity: 0.55,
   },
   sectionLabel: {
     color: LumoraColors.primaryText,
