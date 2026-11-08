@@ -1,22 +1,25 @@
 import { Link, router } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { ActionButton, Brand, Card, Page } from '@/components/lumora-ui';
 import { Fonts, LumoraColors } from '@/constants/theme';
 import { useThemedStyles } from '@/contexts/appearance-context';
+import { useAuth } from '@/contexts/auth-context';
 import { useOnboarding } from '@/contexts/onboarding-context';
 
 const tagline = 'Through every moment, keep the light.';
 
 export default function WelcomeScreen() {
   const styles = useThemedStyles(baseStyles);
-  const { profile, isLoaded, loadError } = useOnboarding();
-  const [signInMessage, setSignInMessage] = useState('');
+  const { profile, isLoaded: profileLoaded, loadError } = useOnboarding();
+  const { session, isLoading: authLoading, error: authError } = useAuth();
 
   useEffect(() => {
-    if (isLoaded && profile.completed) router.replace('/home');
-  }, [isLoaded, profile.completed]);
+    if (!authLoading && profileLoaded && session) {
+      router.replace(profile.completed ? '/home' : '/personal-details');
+    }
+  }, [authLoading, profileLoaded, profile.completed, session]);
 
   return (
     <Page>
@@ -43,21 +46,13 @@ export default function WelcomeScreen() {
         <Link href="./create-account" asChild>
           <ActionButton>Create your profile</ActionButton>
         </Link>
-        <ActionButton
-          secondary
-          onPress={() => {
-            if (profile.completed) {
-              router.replace('/home');
-            } else {
-              setSignInMessage('Sign-in is not available yet. You can set up your Lumora profile on this device.');
-            }
-          }}>
-          I already have a profile
-        </ActionButton>
-        {signInMessage ? <Text style={styles.signInMessage}>{signInMessage}</Text> : null}
+        <Link href="./login" asChild>
+          <ActionButton secondary>I already have an account</ActionButton>
+        </Link>
+        {authError ? <Text style={styles.signInMessage}>{authError}</Text> : null}
         {loadError ? <Text style={styles.signInMessage}>{loadError}</Text> : null}
         <Text style={styles.localNote}>
-          Email verification and sign-in are not available yet. Your profile details are saved on this device.
+          Account sign-in uses Supabase Auth. Lumora profile and space details are stored on this device for now.
         </Text>
       </Card>
     </Page>

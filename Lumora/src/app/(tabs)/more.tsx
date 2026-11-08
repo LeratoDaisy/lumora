@@ -4,12 +4,14 @@ import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { ActionButton, Card, Heading, Page, SectionLabel } from '@/components/lumora-ui';
 import { Fonts } from '@/constants/theme';
+import { useAuth } from '@/contexts/auth-context';
 import { useAppearance, useThemedStyles } from '@/contexts/appearance-context';
 import { useOnboarding } from '@/contexts/onboarding-context';
 
 export default function MoreScreen() {
   const styles = useThemedStyles(baseStyles);
   const { profile, clearProfile } = useOnboarding();
+  const { signOut: signOutAuth } = useAuth();
   const { appearance } = useAppearance();
   const [error, setError] = useState('');
   const displayName = profile.preferredName || profile.firstName || 'Your profile';
@@ -30,6 +32,7 @@ export default function MoreScreen() {
   async function signOut() {
     setError('');
     try {
+      await signOutAuth();
       await clearProfile();
       router.replace('/');
     } catch (clearError) {

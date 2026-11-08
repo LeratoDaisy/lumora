@@ -7,11 +7,14 @@ import { OnboardingProvider } from '@/contexts/onboarding-context';
 import { MemoryProvider } from '@/contexts/memory-context';
 import { CheckInProvider } from '@/contexts/check-in-context';
 import { EngagementProvider } from '@/contexts/engagement-context';
+import { AuthProvider } from '@/contexts/auth-context';
 
 export default function RootLayout() {
   return (
     <AppearanceProvider>
-      <AppNavigation />
+      <AuthProvider>
+        <AppNavigation />
+      </AuthProvider>
     </AppearanceProvider>
   );
 }
@@ -53,6 +56,7 @@ function AppNavigation() {
                 }}>
                 <Stack.Screen name="index" />
                 <Stack.Screen name="(tabs)" />
+                <Stack.Screen name="login" />
                 <Stack.Screen name="memory/create" options={{ presentation: 'modal' }} />
                 <Stack.Screen name="memory/[id]" />
                 <Stack.Screen name="check-in" options={{ presentation: 'modal' }} />

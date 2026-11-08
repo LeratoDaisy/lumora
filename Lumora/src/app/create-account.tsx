@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { Card } from '@/components/lumora-ui';
@@ -11,6 +11,7 @@ import {
 } from '@/components/onboarding-ui';
 import { Fonts, LumoraColors } from '@/constants/theme';
 import { useThemedStyles } from '@/contexts/appearance-context';
+import { useAuth } from '@/contexts/auth-context';
 import { useOnboarding } from '@/contexts/onboarding-context';
 
 type FieldErrors = {
@@ -20,14 +21,18 @@ type FieldErrors = {
 
 export default function CreateAccountScreen() {
   const styles = useThemedStyles(baseStyles);
-  const { saveProfile } = useOnboarding();
+  const { saveProfile, isLoaded: profileLoaded } = useOnboarding();
+  const { signUp, isLoading: authLoading } = useAuth();
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [errors, setErrors] = useState<FieldErrors>({});
   const [saveError, setSaveError] = useState('');
-  const [saving, setSaving] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const submissionInProgress = useRef(false);
 
   async function submit() {
+    if (submissionInProgress.current || authLoading || !profileLoaded) return;
     const nextErrors: FieldErrors = {};
     if (!fullName.trim()) nextErrors.fullName = 'Enter your full name.';
     if (!email.trim()) {
@@ -35,14 +40,28 @@ export default function CreateAccountScreen() {
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
       nextErrors.email = 'Enter a valid email address.';
     }
+    if (!password) {
+      setSaveError('Enter a password.');
+      setErrors(nextErrors);
+      return;
+    }
     setErrors(nextErrors);
     if (Object.keys(nextErrors).length > 0) return;
 
     setSaveError('');
-    setSaving(true);
+    submissionInProgress.current = true;
+    setSubmitting(true);
     try {
-      await saveProfile({ firstName: fullName.trim().split(/\s+/)[0] });
-      router.push('./verification');
+      const { session, user } = await signUp(email.trim(), password);
+      await saveProfile({
+        firstName: fullName.trim().split(/\s+/)[0],
+        ...(session && user ? { userId: user.id } : {}),
+      });
+      if (session) {
+        router.replace('./personal-details');
+      } else {
+        router.push({ pathname: './verification', params: { email: email.trim() } });
+      }
     } catch (saveFailure) {
       setSaveError(
         saveFailure instanceof Error
@@ -50,7 +69,8 @@ export default function CreateAccountScreen() {
           : "We couldn't save your details. Please try again.",
       );
     } finally {
-      setSaving(false);
+      submissionInProgress.current = false;
+      setSubmitting(false);
     }
   }
 
@@ -58,8 +78,8 @@ export default function CreateAccountScreen() {
     <OnboardingStep
       step={1}
       total={8}
-      title="Create your profile"
-      description="Start with the basics. Email setup is not connected yet, so your email is not sent or stored."
+      title="Create your account"
+      description="Start with your name and email address. Your password is securely handled by Supabase Auth."
       onBack={() => router.back()}>
       <View style={styles.form}>
         <FormField
@@ -90,13 +110,28 @@ export default function CreateAccountScreen() {
           autoComplete="email"
           textContentType="emailAddress"
         />
+        <FormField
+          label="Password"
+          value={password}
+          onChangeText={(value) => {
+            setPassword(value);
+            setSaveError('');
+          }}
+          placeholder="Create a password"
+          secureTextEntry
+          autoCapitalize="none"
+          autoComplete="new-password"
+          textContentType="newPassword"
+        />
         <Card style={styles.notice}>
           <Text style={styles.noticeCopy}>
-            Your name and space details are saved on this device. Email verification and account sign-in are not available yet.
+            Your account credentials are sent to Supabase Auth. Lumora profile and space details remain on this device for now.
           </Text>
         </Card>
-        <StepContinue onPress={submit} disabled={saving}>
-          {saving ? 'Saving…' : 'Continue'}
+        <StepContinue
+          onPress={submit}
+          disabled={submitting || authLoading || !profileLoaded}>
+          {submitting || authLoading ? 'Creating account…' : 'Create account'}
         </StepContinue>
         {saveError ? <InlineError>{saveError}</InlineError> : null}
         {Object.keys(errors).length > 0 ? (
