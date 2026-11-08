@@ -11,13 +11,18 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Fonts, LumoraColors } from '@/constants/theme';
+import { useLumoraColors } from '@/contexts/appearance-context';
 
 export function Page({ children }: PropsWithChildren) {
+  const colors = useLumoraColors();
   return (
-    <SafeAreaView edges={['top']} style={styles.safeArea}>
+    <SafeAreaView
+      edges={['top']}
+      style={[styles.safeArea, { backgroundColor: colors.softSurface }]}>
       <ScrollView
         contentContainerStyle={styles.page}
         keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="on-drag"
         showsVerticalScrollIndicator={false}>
         {children}
       </ScrollView>
@@ -26,12 +31,20 @@ export function Page({ children }: PropsWithChildren) {
 }
 
 export function Brand({ compact = false }: { compact?: boolean }) {
+  const colors = useLumoraColors();
   return (
     <View style={styles.brand}>
-      <View style={[styles.brandMark, compact && styles.brandMarkCompact]}>
-        <Text style={[styles.brandLetter, compact && styles.brandLetterCompact]}>L</Text>
+      <View
+        style={[
+          styles.brandMark,
+          compact && styles.brandMarkCompact,
+          { backgroundColor: colors.primary },
+        ]}>
+        <Text style={[styles.brandLetter, compact && styles.brandLetterCompact, { color: colors.onPrimary }]}>L</Text>
       </View>
-      <Text style={[styles.brandName, compact && styles.brandNameCompact]}>Lumora</Text>
+      <Text style={[styles.brandName, compact && styles.brandNameCompact, { color: colors.primaryText }]}>
+        Lumora
+      </Text>
     </View>
   );
 }
@@ -45,11 +58,12 @@ export function Heading({
   title: string;
   description?: string;
 }) {
+  const colors = useLumoraColors();
   return (
     <View style={styles.heading}>
-      {eyebrow ? <Text style={styles.eyebrow}>{eyebrow}</Text> : null}
-      <Text style={styles.pageTitle}>{title}</Text>
-      {description ? <Text style={styles.description}>{description}</Text> : null}
+      {eyebrow ? <Text style={[styles.eyebrow, { color: colors.primary }]}>{eyebrow}</Text> : null}
+      <Text style={[styles.pageTitle, { color: colors.primaryText }]}>{title}</Text>
+      {description ? <Text style={[styles.description, { color: colors.secondaryText }]}>{description}</Text> : null}
     </View>
   );
 }
@@ -58,7 +72,17 @@ export function Card({
   children,
   style,
 }: PropsWithChildren<{ style?: StyleProp<ViewStyle> }>) {
-  return <View style={[styles.card, style]}>{children}</View>;
+  const colors = useLumoraColors();
+  return (
+    <View
+      style={[
+        styles.card,
+        style,
+        { backgroundColor: colors.warmSurface, borderColor: colors.border },
+      ]}>
+      {children}
+    </View>
+  );
 }
 
 export function ActionButton({
@@ -73,6 +97,7 @@ export function ActionButton({
   disabled?: boolean;
   style?: StyleProp<ViewStyle>;
 }>) {
+  const colors = useLumoraColors();
   return (
     <Pressable
       accessibilityRole="button"
@@ -80,12 +105,18 @@ export function ActionButton({
       disabled={disabled}
       style={({ pressed }) => [
         styles.button,
-        secondary ? styles.secondaryButton : styles.primaryButton,
+        secondary
+          ? [styles.secondaryButton, { borderColor: colors.primary }]
+          : [styles.primaryButton, { backgroundColor: colors.primary }],
         pressed && styles.pressed,
         disabled && styles.disabled,
         style,
       ]}>
-      <Text style={[styles.buttonText, secondary && styles.secondaryButtonText]}>
+      <Text
+        style={[
+          styles.buttonText,
+          { color: secondary ? colors.primary : colors.onPrimary },
+        ]}>
         {children}
       </Text>
     </Pressable>
@@ -93,7 +124,8 @@ export function ActionButton({
 }
 
 export function SectionLabel({ children }: PropsWithChildren) {
-  return <Text style={styles.sectionLabel}>{children}</Text>;
+  const colors = useLumoraColors();
+  return <Text style={[styles.sectionLabel, { color: colors.primaryText }]}>{children}</Text>;
 }
 
 export function EmptyState({
@@ -105,13 +137,14 @@ export function EmptyState({
   description: string;
   action?: ReactNode;
 }) {
+  const colors = useLumoraColors();
   return (
     <View style={styles.emptyState}>
-      <View style={styles.emptyMark}>
-        <Text style={styles.emptyMarkText}>✦</Text>
+      <View style={[styles.emptyMark, { backgroundColor: colors.selectedSurface }]}>
+        <Text style={[styles.emptyMarkText, { color: colors.primary }]}>✦</Text>
       </View>
-      <Text style={styles.emptyTitle}>{title}</Text>
-      <Text style={styles.emptyDescription}>{description}</Text>
+      <Text style={[styles.emptyTitle, { color: colors.primaryText }]}>{title}</Text>
+      <Text style={[styles.emptyDescription, { color: colors.secondaryText }]}>{description}</Text>
       {action}
     </View>
   );

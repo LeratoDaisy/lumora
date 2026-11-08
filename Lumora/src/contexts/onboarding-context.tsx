@@ -13,6 +13,7 @@ export type UserRole = 'Patient' | 'Family Member' | 'Caregiver';
 export type IllnessCategory = 'Cancer' | 'Chronic illness' | 'Other' | 'Prefer not to say';
 
 export type OnboardingProfile = {
+  userId: string;
   firstName: string;
   preferredName: string;
   role: UserRole | null;
@@ -30,14 +31,23 @@ type OnboardingContextValue = {
 };
 
 const STORAGE_KEY = 'lumora.onboarding.v1';
-const INITIAL_PROFILE: OnboardingProfile = {
-  firstName: '',
-  preferredName: '',
-  role: null,
-  illnessCategory: 'Prefer not to say',
-  spaceName: '',
-  completed: false,
-};
+function createUserId() {
+  return `lumora-user-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
+}
+
+function createInitialProfile(): OnboardingProfile {
+  return {
+    userId: createUserId(),
+    firstName: '',
+    preferredName: '',
+    role: null,
+    illnessCategory: 'Prefer not to say',
+    spaceName: '',
+    completed: false,
+  };
+}
+
+const INITIAL_PROFILE = createInitialProfile();
 
 const OnboardingContext = createContext<OnboardingContextValue | null>(null);
 
@@ -45,6 +55,7 @@ function isStoredProfile(value: unknown): value is OnboardingProfile {
   if (!value || typeof value !== 'object') return false;
   const profile = value as Record<string, unknown>;
   return (
+    (profile.userId === undefined || typeof profile.userId === 'string') &&
     typeof profile.firstName === 'string' &&
     typeof profile.preferredName === 'string' &&
     (profile.role === null ||
@@ -80,14 +91,19 @@ export function OnboardingProvider({ children }: PropsWithChildren) {
           if (!isStoredProfile(parsed)) {
             throw new Error('Saved onboarding details are not in a recognized format.');
           }
-          if (active) setProfile(parsed);
+          if (active) {
+            setProfile({
+              ...parsed,
+              userId: typeof parsed.userId === 'string' && parsed.userId ? parsed.userId : createUserId(),
+            });
+          }
         }
       } catch (error) {
         if (active) {
           setLoadError(
             error instanceof Error
-              ? `We couldn't restore your saved demo details. ${error.message}`
-              : "We couldn't restore your saved demo details.",
+              ? `We couldn't restore your saved profile details. ${error.message}`
+              : "We couldn't restore your saved profile details.",
           );
         }
       } finally {
@@ -114,7 +130,7 @@ export function OnboardingProvider({ children }: PropsWithChildren) {
 
   const clearProfile = useCallback(async () => {
     await AsyncStorage.removeItem(STORAGE_KEY);
-    setProfile(INITIAL_PROFILE);
+    setProfile(createInitialProfile());
     setLoadError(null);
   }, []);
 

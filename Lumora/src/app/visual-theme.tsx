@@ -4,6 +4,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { ActionButton, Card, SectionLabel } from '@/components/lumora-ui';
 import { OnboardingStep } from '@/components/onboarding-ui';
 import { Fonts, LumoraColors } from '@/constants/theme';
+import { useLumoraColors, useThemedStyles } from '@/contexts/appearance-context';
 import { useOnboarding } from '@/contexts/onboarding-context';
 
 const accents = {
@@ -14,6 +15,8 @@ const accents = {
 } as const;
 
 export default function VisualThemeScreen() {
+  const styles = useThemedStyles(baseStyles);
+  const colors = useLumoraColors();
   const { profile } = useOnboarding();
   const accent = accents[profile.illnessCategory];
 
@@ -35,8 +38,8 @@ export default function VisualThemeScreen() {
         </View>
         <View style={styles.swatches}>
           <View style={[styles.swatch, { backgroundColor: accent }]} />
-          <View style={[styles.swatch, { backgroundColor: LumoraColors.secondary }]} />
-          <View style={[styles.swatch, { backgroundColor: LumoraColors.warmSurface }]} />
+          <View style={[styles.swatch, { backgroundColor: colors.secondary }]} />
+          <View style={[styles.swatch, { backgroundColor: colors.warmSurface }]} />
         </View>
         <SectionLabel>{profile.illnessCategory}</SectionLabel>
       </Card>
@@ -45,7 +48,7 @@ export default function VisualThemeScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const baseStyles = StyleSheet.create({
   preview: {
     gap: 16,
   },

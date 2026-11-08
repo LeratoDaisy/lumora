@@ -4,30 +4,32 @@ import { StyleSheet, Text, View } from 'react-native';
 import { ActionButton, Card } from '@/components/lumora-ui';
 import { OnboardingStep } from '@/components/onboarding-ui';
 import { Fonts, LumoraColors } from '@/constants/theme';
+import { useThemedStyles } from '@/contexts/appearance-context';
 
 export default function VerificationScreen() {
+  const styles = useThemedStyles(baseStyles);
   return (
     <OnboardingStep
       step={2}
       total={8}
-      title="Check your email"
-      description="Normally, a verification link would be sent to the email address you entered."
+      title="Email verification"
+      description="Email verification is not connected yet. No email was sent; you can continue setting up your Lumora profile."
       onBack={() => router.back()}>
       <Card style={styles.card}>
         <View style={styles.mark}>
           <Text style={styles.markText}>✉</Text>
         </View>
-        <Text style={styles.title}>This is a demo</Text>
+        <Text style={styles.title}>Continue setting up your space</Text>
         <Text style={styles.copy}>
-          No email has been sent. Continue to the next step to preview the rest of onboarding.
+          Your profile information stays on this device until account access is available.
         </Text>
-        <ActionButton onPress={() => router.push('./personal-details')}>Continue for demo</ActionButton>
+        <ActionButton onPress={() => router.push('./personal-details')}>Continue</ActionButton>
       </Card>
     </OnboardingStep>
   );
 }
 
-const styles = StyleSheet.create({
+const baseStyles = StyleSheet.create({
   card: {
     alignItems: 'center',
     paddingVertical: 28,

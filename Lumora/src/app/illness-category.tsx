@@ -9,10 +9,10 @@ import {
 } from '@/contexts/onboarding-context';
 
 const categories: { title: IllnessCategory; description: string }[] = [
-  { title: 'Cancer', description: 'An optional visual preference for this demo.' },
-  { title: 'Chronic illness', description: 'An optional visual preference for this demo.' },
-  { title: 'Other', description: 'An optional visual preference for this demo.' },
-  { title: 'Prefer not to say', description: 'Keep the default Lumora accent.' },
+  { title: 'Cancer', description: 'An optional choice used only for the onboarding preview.' },
+  { title: 'Chronic illness', description: 'An optional choice used only for the onboarding preview.' },
+  { title: 'Other', description: 'An optional choice used only for the onboarding preview.' },
+  { title: 'Prefer not to say', description: 'Keep the standard Lumora preview.' },
 ];
 
 export default function IllnessCategoryScreen() {

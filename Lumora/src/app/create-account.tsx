@@ -4,30 +4,25 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import { Card } from '@/components/lumora-ui';
 import {
-  CheckOption,
   FormField,
   InlineError,
   OnboardingStep,
   StepContinue,
 } from '@/components/onboarding-ui';
 import { Fonts, LumoraColors } from '@/constants/theme';
+import { useThemedStyles } from '@/contexts/appearance-context';
 import { useOnboarding } from '@/contexts/onboarding-context';
 
 type FieldErrors = {
   fullName?: string;
   email?: string;
-  password?: string;
-  confirmPassword?: string;
-  privacy?: string;
 };
 
 export default function CreateAccountScreen() {
+  const styles = useThemedStyles(baseStyles);
   const { saveProfile } = useOnboarding();
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [agreed, setAgreed] = useState(false);
   const [errors, setErrors] = useState<FieldErrors>({});
   const [saveError, setSaveError] = useState('');
   const [saving, setSaving] = useState(false);
@@ -40,18 +35,6 @@ export default function CreateAccountScreen() {
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
       nextErrors.email = 'Enter a valid email address.';
     }
-    if (!password) {
-      nextErrors.password = 'Create a password.';
-    } else if (password.length < 8 || !/[A-Za-z]/.test(password) || !/\d/.test(password)) {
-      nextErrors.password = 'Use at least 8 characters, including a letter and a number.';
-    }
-    if (!confirmPassword) {
-      nextErrors.confirmPassword = 'Confirm your password.';
-    } else if (confirmPassword !== password) {
-      nextErrors.confirmPassword = 'Passwords do not match.';
-    }
-    if (!agreed) nextErrors.privacy = 'Please agree to the Privacy Notice to continue.';
-
     setErrors(nextErrors);
     if (Object.keys(nextErrors).length > 0) return;
 
@@ -59,15 +42,12 @@ export default function CreateAccountScreen() {
     setSaving(true);
     try {
       await saveProfile({ firstName: fullName.trim().split(/\s+/)[0] });
-      setEmail('');
-      setPassword('');
-      setConfirmPassword('');
       router.push('./verification');
     } catch (saveFailure) {
       setSaveError(
         saveFailure instanceof Error
-          ? `We couldn't save your demo details. ${saveFailure.message}`
-          : "We couldn't save your demo details. Please try again.",
+          ? `We couldn't save your details. ${saveFailure.message}`
+          : "We couldn't save your details. Please try again.",
       );
     } finally {
       setSaving(false);
@@ -78,14 +58,18 @@ export default function CreateAccountScreen() {
     <OnboardingStep
       step={1}
       total={8}
-      title="Create your account"
-      description="Start with the basics. This is a demo flow; your email and password are not saved or sent."
+      title="Create your profile"
+      description="Start with the basics. Email setup is not connected yet, so your email is not sent or stored."
       onBack={() => router.back()}>
       <View style={styles.form}>
         <FormField
           label="Full name"
           value={fullName}
-          onChangeText={setFullName}
+          onChangeText={(value) => {
+            setFullName(value);
+            setErrors((current) => ({ ...current, fullName: undefined }));
+            setSaveError('');
+          }}
           placeholder="Your full name"
           error={errors.fullName}
           autoComplete="name"
@@ -94,7 +78,11 @@ export default function CreateAccountScreen() {
         <FormField
           label="Email"
           value={email}
-          onChangeText={setEmail}
+          onChangeText={(value) => {
+            setEmail(value);
+            setErrors((current) => ({ ...current, email: undefined }));
+            setSaveError('');
+          }}
           placeholder="you@example.com"
           error={errors.email}
           keyboardType="email-address"
@@ -102,38 +90,13 @@ export default function CreateAccountScreen() {
           autoComplete="email"
           textContentType="emailAddress"
         />
-        <FormField
-          label="Password"
-          value={password}
-          onChangeText={setPassword}
-          placeholder="At least 8 characters"
-          error={errors.password}
-          secureTextEntry
-          autoComplete="off"
-          textContentType="none"
-          autoCapitalize="none"
-        />
-        <FormField
-          label="Confirm password"
-          value={confirmPassword}
-          onChangeText={setConfirmPassword}
-          placeholder="Enter your password again"
-          error={errors.confirmPassword}
-          secureTextEntry
-          autoComplete="off"
-          textContentType="none"
-          autoCapitalize="none"
-        />
         <Card style={styles.notice}>
-          <CheckOption checked={agreed} onPress={() => setAgreed((current) => !current)} error={errors.privacy}>
-            I agree to the Privacy Notice.
-          </CheckOption>
           <Text style={styles.noticeCopy}>
-            Demo notice: names, role, category, and space name are saved on this device. Email, password, and date of birth are not stored.
+            Your name and space details are saved on this device. Email verification and account sign-in are not available yet.
           </Text>
         </Card>
         <StepContinue onPress={submit} disabled={saving}>
-          {saving ? 'Saving…' : 'Create account'}
+          {saving ? 'Saving…' : 'Continue'}
         </StepContinue>
         {saveError ? <InlineError>{saveError}</InlineError> : null}
         {Object.keys(errors).length > 0 ? (
@@ -144,7 +107,7 @@ export default function CreateAccountScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const baseStyles = StyleSheet.create({
   form: {
     gap: 16,
   },

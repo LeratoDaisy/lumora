@@ -4,11 +4,13 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import { ActionButton, Brand, Card, Page } from '@/components/lumora-ui';
 import { Fonts, LumoraColors } from '@/constants/theme';
+import { useThemedStyles } from '@/contexts/appearance-context';
 import { useOnboarding } from '@/contexts/onboarding-context';
 
 const tagline = 'Through every moment, keep the light.';
 
 export default function WelcomeScreen() {
+  const styles = useThemedStyles(baseStyles);
   const { profile, isLoaded, loadError } = useOnboarding();
   const [signInMessage, setSignInMessage] = useState('');
 
@@ -39,7 +41,7 @@ export default function WelcomeScreen() {
           beside you.
         </Text>
         <Link href="./create-account" asChild>
-          <ActionButton>Create an account</ActionButton>
+          <ActionButton>Create your profile</ActionButton>
         </Link>
         <ActionButton
           secondary
@@ -47,22 +49,22 @@ export default function WelcomeScreen() {
             if (profile.completed) {
               router.replace('/home');
             } else {
-              setSignInMessage('Sign in is not connected in this demo yet. Create a demo account to continue.');
+              setSignInMessage('Sign-in is not available yet. You can set up your Lumora profile on this device.');
             }
           }}>
-          Sign in
+          I already have a profile
         </ActionButton>
         {signInMessage ? <Text style={styles.signInMessage}>{signInMessage}</Text> : null}
         {loadError ? <Text style={styles.signInMessage}>{loadError}</Text> : null}
         <Text style={styles.localNote}>
-          Demo only · Email and password are not saved
+          Email verification and sign-in are not available yet. Your profile details are saved on this device.
         </Text>
       </Card>
     </Page>
   );
 }
 
-const styles = StyleSheet.create({
+const baseStyles = StyleSheet.create({
   top: {
     paddingTop: 8,
   },

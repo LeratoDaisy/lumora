@@ -1,82 +1,82 @@
-import { Link } from 'expo-router';
-import { Text } from 'react-native';
+import { router } from 'expo-router';
+import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 
-import { ActionButton, Card, EmptyState, Heading, Page, SectionLabel } from '@/components/lumora-ui';
-import { Fonts, LumoraColors } from '@/constants/theme';
+import { ActionButton, EmptyState, Heading, Page } from '@/components/lumora-ui';
+import { MemoryCard } from '@/components/memory-card';
+import { Fonts } from '@/constants/theme';
+import { useLumoraColors, useThemedStyles } from '@/contexts/appearance-context';
+import { useMemories } from '@/contexts/memory-context';
 import { useOnboarding } from '@/contexts/onboarding-context';
 
-type Memory = {
-  id: string;
-  title: string;
-  date: string;
-  shared: boolean;
-};
-
-const memories: Memory[] = [];
-
 export default function LightbookScreen() {
+  const styles = useThemedStyles(baseStyles);
+  const colors = useLumoraColors();
   const { profile } = useOnboarding();
-  const privateMemories = memories.filter((memory) => !memory.shared);
+  const { memories, isLoaded, loadError } = useMemories();
+  const ownMemories = memories
+    .filter((memory) => memory.creatorId === profile.userId)
+    .sort((a, b) => b.date.localeCompare(a.date) || b.createdAt.localeCompare(a.createdAt));
 
   return (
     <Page>
-      <Heading
-        title="Lightbook"
-        description="A private place for the moments, stories, and little things you want to remember."
-      />
-
-      <Card>
-        <SectionLabel>Private memories</SectionLabel>
-        <Text style={styles.note}>
-          Only you can see these until you choose to share them.
-        </Text>
-        {privateMemories.length === 0 ? (
-          <>
-            <EmptyState
-              title="Your memories will find a home here"
-              description="Keep a moment, a story, or anything you would like to hold on to."
-            />
-            {profile.role === 'Caregiver' ? (
+      <Heading title="Lightbook" description="A private place to keep meaningful moments." />
+      {loadError ? <Text style={styles.error}>{loadError}</Text> : null}
+      {!isLoaded ? (
+        <View style={styles.loading}>
+          <ActivityIndicator color={colors.primary} />
+          <Text style={styles.note}>Loading your Lightbook…</Text>
+        </View>
+      ) : ownMemories.length === 0 ? (
+        <EmptyState
+          title="Your Lightbook is waiting."
+          description="Save a moment you want to remember."
+          action={
+            profile.role === 'Caregiver' ? (
               <Text style={styles.note}>
                 Caregiver access is invited-only. Memory creation is not available for this role.
               </Text>
             ) : (
-              <ActionButton>Create a memory</ActionButton>
-            )}
-          </>
-        ) : (
-          privateMemories.map((memory) => (
-            <Card key={memory.id}>
-              <Text style={styles.memoryTitle}>{memory.title}</Text>
-              <Text style={styles.note}>{memory.date} · Private</Text>
-            </Card>
-          ))
-        )}
-      </Card>
-
-      <Card>
-        <SectionLabel>Shared with family</SectionLabel>
-        <Text style={styles.note}>
-          Moments you choose to share are kept on your private family timeline.
-        </Text>
-        <Link href="/timeline" asChild>
-          <ActionButton secondary>View family timeline</ActionButton>
-        </Link>
-      </Card>
+              <ActionButton onPress={() => router.push('/memory/create')}>
+                Create a memory
+              </ActionButton>
+            )
+          }
+        />
+      ) : (
+        <View style={styles.list}>
+          <ActionButton onPress={() => router.push('/memory/create')} disabled={profile.role === 'Caregiver'}>
+            Create a memory
+          </ActionButton>
+          {profile.role === 'Caregiver' ? (
+            <Text style={styles.note}>Caregiver access is invited-only. Memory creation is not available for this role.</Text>
+          ) : null}
+          {ownMemories.map((memory) => <MemoryCard key={memory.id} memory={memory} />)}
+        </View>
+      )}
     </Page>
   );
 }
 
-const styles = {
+const baseStyles = StyleSheet.create({
+  list: {
+    gap: 12,
+  },
+  loading: {
+    alignItems: 'center',
+    gap: 12,
+    paddingVertical: 24,
+  },
   note: {
-    color: LumoraColors.secondaryText,
+    color: '#6E6670',
     fontFamily: Fonts.sans,
     fontSize: 14,
     lineHeight: 21,
+    textAlign: 'center',
   },
-  memoryTitle: {
-    color: LumoraColors.primaryText,
-    fontFamily: Fonts.serif,
-    fontSize: 20,
+  error: {
+    color: '#B64B58',
+    fontFamily: Fonts.sans,
+    fontSize: 13,
+    lineHeight: 20,
   },
-};
+});

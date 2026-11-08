@@ -5,12 +5,14 @@ import { StyleSheet, Text, View } from 'react-native';
 import { Card } from '@/components/lumora-ui';
 import { FormField, InlineError, OnboardingStep, StepContinue } from '@/components/onboarding-ui';
 import { Fonts, LumoraColors } from '@/constants/theme';
+import { useThemedStyles } from '@/contexts/appearance-context';
 import { useOnboarding } from '@/contexts/onboarding-context';
 
 export default function SpaceScreen() {
+  const styles = useThemedStyles(baseStyles);
   const { profile, saveProfile } = useOnboarding();
   const isPatient = profile.role === 'Patient';
-  const [value, setValue] = useState(isPatient ? profile.spaceName : '');
+  const [value, setValue] = useState(profile.spaceName);
   const [error, setError] = useState('');
   const [saving, setSaving] = useState(false);
 
@@ -24,7 +26,7 @@ export default function SpaceScreen() {
       return;
     }
     if (!value.trim()) {
-      setError(isPatient ? 'Enter a name for your Lumora Space.' : 'Enter an invite code.');
+      setError('Enter a name for your Lumora Space.');
       return;
     }
 
@@ -32,15 +34,15 @@ export default function SpaceScreen() {
     setSaving(true);
     try {
       await saveProfile({
-        spaceName: isPatient ? value.trim() : 'Lumora Space',
+        spaceName: value.trim(),
         completed: true,
       });
       router.replace('./home');
     } catch (saveFailure) {
       setError(
         saveFailure instanceof Error
-          ? `We couldn't save your demo space. ${saveFailure.message}`
-          : "We couldn't save your demo space. Please try again.",
+          ? `We couldn't save your Lumora Space. ${saveFailure.message}`
+          : "We couldn't save your Lumora Space. Please try again.",
       );
     } finally {
       setSaving(false);
@@ -51,23 +53,23 @@ export default function SpaceScreen() {
     <OnboardingStep
       step={8}
       total={8}
-      title={isPatient ? 'Create a Lumora Space' : 'Join a Lumora Space'}
+      title={isPatient ? 'Create a Lumora Space' : 'Set up your Lumora Space'}
       description={
         isPatient
-          ? 'Your space belongs to you. You control who is invited.'
-          : 'Enter the invite code shared with you to preview joining a private space.'
+          ? 'Give your private space a name. You can choose what to share later.'
+          : 'Set up your space profile. Invitations are not connected yet, so this does not add you to a shared account.'
       }
       onBack={() => router.back()}>
       <View style={styles.content}>
         <FormField
-          label={isPatient ? 'Space name' : 'Invite code'}
+          label="Space name"
           value={value}
           onChangeText={(text) => {
             setValue(text);
             setError('');
           }}
-          placeholder={isPatient ? 'A name for your space' : 'Enter your invite code'}
-          autoCapitalize={isPatient ? 'words' : 'characters'}
+          placeholder="A name for your space"
+          autoCapitalize="words"
           autoComplete="off"
         />
         {profile.role === 'Caregiver' ? (
@@ -78,19 +80,19 @@ export default function SpaceScreen() {
             </Text>
           </Card>
         ) : null}
-        <Text style={styles.demoNote}>
-          Demo only. This does not create a real space or validate an invitation.
+        <Text style={styles.notice}>
+          Your space profile is saved on this device. Invitations and shared account access are not connected yet.
         </Text>
         {error ? <InlineError>{error}</InlineError> : null}
         <StepContinue onPress={submit} disabled={saving}>
-          {saving ? 'Saving…' : isPatient ? 'Create Space' : 'Join Space'}
+          {saving ? 'Saving…' : isPatient ? 'Create Space' : 'Continue'}
         </StepContinue>
       </View>
     </OnboardingStep>
   );
 }
 
-const styles = StyleSheet.create({
+const baseStyles = StyleSheet.create({
   content: {
     gap: 16,
   },
@@ -109,7 +111,7 @@ const styles = StyleSheet.create({
     fontSize: 13,
     lineHeight: 20,
   },
-  demoNote: {
+  notice: {
     color: LumoraColors.secondaryText,
     fontFamily: Fonts.sans,
     fontSize: 13,

@@ -1,14 +1,16 @@
 import { Tabs } from 'expo-router';
 
-import { Fonts, LumoraColors } from '@/constants/theme';
+import { Fonts } from '@/constants/theme';
+import { useLumoraColors } from '@/contexts/appearance-context';
 
 export default function TabLayout() {
+  const colors = useLumoraColors();
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: LumoraColors.primary,
-        tabBarInactiveTintColor: LumoraColors.secondaryText,
+        tabBarActiveTintColor: colors.primary,
+        tabBarInactiveTintColor: colors.secondaryText,
         tabBarLabelStyle: {
           fontFamily: Fonts.sans,
           fontSize: 11,
@@ -18,8 +20,8 @@ export default function TabLayout() {
           height: 68,
           paddingTop: 8,
           paddingBottom: 8,
-          backgroundColor: '#FFFFFF',
-          borderTopColor: LumoraColors.border,
+          backgroundColor: colors.tabSurface,
+          borderTopColor: colors.border,
         },
       }}>
       <Tabs.Screen name="home" options={{ title: 'Home' }} />

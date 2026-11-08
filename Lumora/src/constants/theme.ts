@@ -16,15 +16,15 @@ export const Colors = {
     textSecondary: '#6E6670',
   },
   dark: {
-    text: '#2E2830',
-    background: '#F8F3F7',
-    backgroundElement: '#FFF8F0',
-    backgroundSelected: '#EBDDEB',
-    textSecondary: '#6E6670',
+    text: '#F4EEF5',
+    background: '#1C1920',
+    backgroundElement: '#29242E',
+    backgroundSelected: '#3A3040',
+    textSecondary: '#C0B5C4',
   },
 } as const;
 
-export const LumoraColors = {
+export const LightLumoraColors = {
   primary: '#8A6A96',
   secondary: '#D8B7C9',
   softSurface: '#F8F3F7',
@@ -34,7 +34,32 @@ export const LumoraColors = {
   success: '#4F7A62',
   error: '#B64B58',
   border: '#E9DFE8',
+  selectedSurface: '#F0E7F0',
+  inputSurface: '#FFFFFF',
+  onPrimary: '#FFFFFF',
+  tabSurface: '#FFFFFF',
 } as const;
+
+export const DarkLumoraColors = {
+  primary: '#C4A5D0',
+  secondary: '#806B87',
+  softSurface: '#1C1920',
+  warmSurface: '#29242E',
+  primaryText: '#F4EEF5',
+  secondaryText: '#C0B5C4',
+  success: '#9CC6A8',
+  error: '#F0939B',
+  border: '#48404C',
+  selectedSurface: '#3A3040',
+  inputSurface: '#221E26',
+  onPrimary: '#211B25',
+  tabSurface: '#241F28',
+} as const;
+
+export type LumoraPalette = {
+  [Key in keyof typeof LightLumoraColors]: string;
+};
+export const LumoraColors = LightLumoraColors;
 
 export type ThemeColor = keyof typeof Colors.light & keyof typeof Colors.dark;
 

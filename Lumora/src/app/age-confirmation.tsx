@@ -10,9 +10,11 @@ import {
   StepContinue,
 } from '@/components/onboarding-ui';
 import { Fonts, LumoraColors } from '@/constants/theme';
+import { useThemedStyles } from '@/contexts/appearance-context';
 import { useOnboarding } from '@/contexts/onboarding-context';
 
 export default function AgeConfirmationScreen() {
+  const styles = useThemedStyles(baseStyles);
   const { loadError } = useOnboarding();
   const [confirmed, setConfirmed] = useState(false);
   const [error, setError] = useState('');
@@ -52,7 +54,7 @@ export default function AgeConfirmationScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const baseStyles = StyleSheet.create({
   content: {
     gap: 16,
   },

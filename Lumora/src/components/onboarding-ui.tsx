@@ -10,6 +10,7 @@ import {
 
 import { ActionButton, Brand, Page } from '@/components/lumora-ui';
 import { Fonts, LumoraColors } from '@/constants/theme';
+import { useLumoraColors, useThemedStyles } from '@/contexts/appearance-context';
 
 export function OnboardingStep({
   step,
@@ -25,6 +26,9 @@ export function OnboardingStep({
   description: string;
   onBack: () => void;
 }>) {
+  const styles = useThemedStyles(baseStyles);
+  const colors = useLumoraColors();
+  const progress = `${Math.max(0, Math.min(100, (step / total) * 100))}%` as `${number}%`;
   return (
     <Page>
       <View style={styles.top}>
@@ -38,6 +42,17 @@ export function OnboardingStep({
         <Brand compact />
       </View>
       <Text style={styles.stepCount}>STEP {step} OF {total}</Text>
+      <View
+        accessibilityRole="progressbar"
+        accessibilityValue={{ min: 1, max: total, now: step }}
+        style={styles.progressTrack}>
+        <View
+          style={[
+            styles.progressFill,
+            { width: progress, backgroundColor: colors.primary },
+          ]}
+        />
+      </View>
       <View style={styles.heading}>
         <Text style={styles.title}>{title}</Text>
         <Text style={styles.description}>{description}</Text>
@@ -70,6 +85,8 @@ export function FormField({
   autoComplete?: 'name' | 'email' | 'password' | 'new-password' | 'given-name' | 'off';
   textContentType?: 'name' | 'emailAddress' | 'password' | 'newPassword' | 'givenName' | 'none';
 }) {
+  const styles = useThemedStyles(baseStyles);
+  const colors = useLumoraColors();
   return (
     <View style={styles.field}>
       <Text style={styles.label}>{label}</Text>
@@ -78,7 +95,7 @@ export function FormField({
         value={value}
         onChangeText={onChangeText}
         placeholder={placeholder}
-        placeholderTextColor={LumoraColors.secondaryText}
+        placeholderTextColor={colors.secondaryText}
         secureTextEntry={secureTextEntry}
         keyboardType={keyboardType}
         autoCapitalize={autoCapitalize}
@@ -101,6 +118,7 @@ export function CheckOption({
   onPress: () => void;
   error?: string;
 }>) {
+  const styles = useThemedStyles(baseStyles);
   return (
     <View style={styles.checkWrap}>
       <Pressable
@@ -129,6 +147,7 @@ export function ChoiceCard({
   selected: boolean;
   onPress: () => void;
 }) {
+  const styles = useThemedStyles(baseStyles);
   return (
     <Pressable
       accessibilityRole="radio"
@@ -151,6 +170,7 @@ export function ChoiceCard({
 }
 
 export function InlineError({ children }: PropsWithChildren) {
+  const styles = useThemedStyles(baseStyles);
   return <Text style={styles.error}>{children}</Text>;
 }
 
@@ -170,7 +190,7 @@ export function StepContinue({
   );
 }
 
-const styles = StyleSheet.create({
+const baseStyles = StyleSheet.create({
   top: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -194,6 +214,16 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '700',
     letterSpacing: 1,
+  },
+  progressTrack: {
+    height: 4,
+    overflow: 'hidden',
+    borderRadius: 2,
+    backgroundColor: '#E9DFE8',
+  },
+  progressFill: {
+    height: 4,
+    borderRadius: 2,
   },
   heading: {
     gap: 8,
