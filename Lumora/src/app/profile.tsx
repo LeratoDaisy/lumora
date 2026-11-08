@@ -1,11 +1,12 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { ActionButton, Card, Heading, Page } from '@/components/lumora-ui';
 import { Fonts } from '@/constants/theme';
 import { useLumoraColors, useThemedStyles } from '@/contexts/appearance-context';
 import { useOnboarding } from '@/contexts/onboarding-context';
+import { ScalePressable } from '@/components/scale-pressable';
 
 export default function ProfileScreen() {
   const styles = useThemedStyles(baseStyles);
@@ -45,9 +46,9 @@ export default function ProfileScreen() {
 
   return (
     <Page>
-      <Pressable accessibilityRole="button" onPress={() => router.back()} style={styles.backButton}>
+      <ScalePressable accessibilityRole="button" onPress={() => router.back()} style={styles.backButton}>
         <Text style={styles.backText}>‹  Back</Text>
-      </Pressable>
+      </ScalePressable>
       <Heading title="Profile" description="Your personal details for this Lumora Space." />
 
       <View style={styles.form}>

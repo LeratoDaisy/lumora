@@ -3,7 +3,6 @@ import { useState } from 'react';
 import {
   ActivityIndicator,
   Image,
-  Pressable,
   StyleSheet,
   Text,
   TextInput,
@@ -12,6 +11,7 @@ import {
 import * as ImagePicker from 'expo-image-picker';
 
 import { ActionButton, Card, Heading, Page } from '@/components/lumora-ui';
+import { ScalePressable } from '@/components/scale-pressable';
 import { Fonts, LumoraColors } from '@/constants/theme';
 import { useLumoraColors, useThemedStyles } from '@/contexts/appearance-context';
 import {
@@ -85,12 +85,12 @@ export default function CreateMemoryScreen() {
 
   return (
     <Page>
-      <Pressable
+      <ScalePressable
         accessibilityRole="button"
         onPress={() => router.back()}
         style={styles.backButton}>
         <Text style={styles.backText}>‹  Back</Text>
-      </Pressable>
+      </ScalePressable>
       <Heading
         title={id ? 'Edit memory' : 'Create a memory'}
         description="Keep the details that make this moment meaningful."
@@ -324,13 +324,14 @@ function ChoiceButton({
 }) {
   const styles = useThemedStyles(baseStyles);
   return (
-    <Pressable
+    <ScalePressable
       accessibilityRole="radio"
       accessibilityState={{ checked: selected }}
       onPress={onPress}
+      scaleTo={0.98}
       style={[styles.chip, selected && styles.selectedChip]}>
       <Text style={[styles.chipText, selected && styles.selectedChipText]}>{label}</Text>
-    </Pressable>
+    </ScalePressable>
   );
 }
 
@@ -347,10 +348,11 @@ function VisibilityChoice({
 }) {
   const styles = useThemedStyles(baseStyles);
   return (
-    <Pressable
+    <ScalePressable
       accessibilityRole="radio"
       accessibilityState={{ checked: selected }}
       onPress={onPress}
+      scaleTo={0.98}
       style={[styles.visibilityCard, selected && styles.selectedVisibilityCard]}>
       <View style={[styles.radio, selected && styles.selectedRadio]}>
         {selected ? <View style={styles.radioDot} /> : null}
@@ -359,7 +361,7 @@ function VisibilityChoice({
         <Text style={styles.visibilityTitle}>{title}</Text>
         <Text style={styles.helper}>{description}</Text>
       </View>
-    </Pressable>
+    </ScalePressable>
   );
 }
 

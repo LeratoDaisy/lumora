@@ -3,7 +3,6 @@ import { useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
-  Pressable,
   StyleSheet,
   Text,
   TextInput,
@@ -17,6 +16,7 @@ import { makeContentId, useEngagement } from '@/contexts/engagement-context';
 import { CheckInFeelingLabels, useCheckIns } from '@/contexts/check-in-context';
 import { useMemories } from '@/contexts/memory-context';
 import { useOnboarding } from '@/contexts/onboarding-context';
+import { ScalePressable } from '@/components/scale-pressable';
 
 function formatDate(value: string) {
   const parsed = new Date(`${value}T00:00:00`);
@@ -100,9 +100,9 @@ export default function CommentsScreen() {
 
   return (
     <Page>
-      <Pressable accessibilityRole="button" onPress={() => router.back()} style={styles.backButton}>
+      <ScalePressable accessibilityRole="button" onPress={() => router.back()} style={styles.backButton}>
         <Text style={styles.backText}>‹  Back</Text>
-      </Pressable>
+      </ScalePressable>
       {loading ? (
         <View style={styles.loading}>
           <ActivityIndicator color={colors.primary} />
@@ -146,12 +146,12 @@ export default function CommentsScreen() {
                   </View>
                   <Text style={styles.copy}>{comment.text}</Text>
                   {comment.userId === profile.userId ? (
-                    <Pressable
+                    <ScalePressable
                       accessibilityRole="button"
                       onPress={() => confirmDelete(comment.id)}
                       style={styles.deleteButton}>
                       <Text style={[styles.deleteText, { color: colors.error }]}>Delete</Text>
-                    </Pressable>
+                    </ScalePressable>
                   ) : null}
                 </Card>
               ))

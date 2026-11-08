@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 import { Card, Heading, Page, SectionLabel } from '@/components/lumora-ui';
 import { Fonts } from '@/constants/theme';
@@ -9,6 +9,7 @@ import {
   useThemedStyles,
   type AppearancePreference,
 } from '@/contexts/appearance-context';
+import { ScalePressable } from '@/components/scale-pressable';
 
 const appearanceOptions: { value: AppearancePreference; title: string; detail: string }[] = [
   { value: 'light', title: 'Light', detail: 'Use Lumora’s light palette.' },
@@ -23,9 +24,9 @@ export default function SettingsScreen() {
 
   return (
     <Page>
-      <Pressable accessibilityRole="button" onPress={() => router.back()} style={styles.backButton}>
+      <ScalePressable accessibilityRole="button" onPress={() => router.back()} style={styles.backButton}>
         <Text style={styles.backText}>‹  Back</Text>
-      </Pressable>
+      </ScalePressable>
       <Heading title="Settings" description="Make Lumora feel comfortable for you." />
 
       <View style={styles.section}>
@@ -36,18 +37,18 @@ export default function SettingsScreen() {
             {appearanceOptions.map((option) => {
               const selected = appearance === option.value;
               return (
-                <Pressable
+                <ScalePressable
                   key={option.value}
                   accessibilityRole="radio"
                   accessibilityState={{ checked: selected }}
                   onPress={() => void setAppearance(option.value)}
-                  style={({ pressed }) => [
+                  scaleTo={0.98}
+                  style={[
                     styles.option,
                     selected && {
                       borderColor: colors.primary,
                       backgroundColor: colors.selectedSurface,
                     },
-                    pressed && styles.pressed,
                   ]}>
                   <View
                     style={[
@@ -62,7 +63,7 @@ export default function SettingsScreen() {
                     <Text style={styles.title}>{option.title}</Text>
                     <Text style={styles.copy}>{option.detail}</Text>
                   </View>
-                </Pressable>
+                </ScalePressable>
               );
             })}
           </View>
@@ -146,9 +147,6 @@ const baseStyles = StyleSheet.create({
     height: 12,
     width: 12,
     borderRadius: 6,
-  },
-  pressed: {
-    opacity: 0.75,
   },
   error: {
     fontFamily: Fonts.sans,

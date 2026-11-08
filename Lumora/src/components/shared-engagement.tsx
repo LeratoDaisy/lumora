@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 import {
   makeContentId,
@@ -11,6 +11,7 @@ import {
 import { useOnboarding } from '@/contexts/onboarding-context';
 import { Fonts } from '@/constants/theme';
 import { useLumoraColors, useThemedStyles } from '@/contexts/appearance-context';
+import { ScalePressable } from '@/components/scale-pressable';
 
 export function SharedEngagement({
   type,
@@ -55,27 +56,27 @@ export function SharedEngagement({
       ) : null}
       <View style={styles.reactions} accessibilityLabel="Reactions">
         {reactionOptions.map((option) => (
-          <Pressable
+          <ScalePressable
             key={option.type}
             accessibilityRole="button"
             accessibilityLabel={`${option.label}${myReaction?.type === option.type ? ', selected' : ''}`}
             accessibilityState={{ selected: myReaction?.type === option.type }}
             disabled={!isLoaded}
             onPress={() => void toggleReaction(option.type)}
-            style={({ pressed }) => [
+            scaleTo={0.98}
+            style={[
               styles.reactionButton,
               myReaction?.type === option.type && {
                 backgroundColor: colors.selectedSurface,
                 borderColor: colors.primary,
               },
-              pressed && styles.pressed,
               !isLoaded && styles.disabled,
             ]}>
             <Text style={styles.emoji}>{option.emoji}</Text>
-          </Pressable>
+          </ScalePressable>
         ))}
       </View>
-      <Pressable
+      <ScalePressable
         accessibilityRole="button"
         disabled={!isLoaded}
         onPress={() =>
@@ -84,13 +85,12 @@ export function SharedEngagement({
             params: { type, id },
           })
         }
-        style={({ pressed }) => [
+        style={[
           styles.commentsButton,
-          pressed && styles.pressed,
           !isLoaded && styles.disabled,
         ]}>
         <Text style={styles.commentsText}>Comments</Text>
-      </Pressable>
+      </ScalePressable>
       {loadError ? <Text style={[styles.error, { color: colors.error }]}>{loadError}</Text> : null}
       {error ? <Text style={[styles.error, { color: colors.error }]}>{error}</Text> : null}
     </View>
@@ -138,9 +138,6 @@ const baseStyles = StyleSheet.create({
     fontFamily: Fonts.sans,
     fontSize: 13,
     lineHeight: 20,
-  },
-  pressed: {
-    opacity: 0.75,
   },
   disabled: {
     opacity: 0.55,

@@ -1,6 +1,6 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 import { FormField, InlineError } from '@/components/onboarding-ui';
 import { ActionButton, Heading, Page } from '@/components/lumora-ui';
@@ -8,6 +8,7 @@ import { Fonts } from '@/constants/theme';
 import { useThemedStyles } from '@/contexts/appearance-context';
 import { useAuth } from '@/contexts/auth-context';
 import { useOnboarding } from '@/contexts/onboarding-context';
+import { ScalePressable } from '@/components/scale-pressable';
 
 export default function LoginScreen() {
   const styles = useThemedStyles(baseStyles);
@@ -57,9 +58,9 @@ export default function LoginScreen() {
 
   return (
     <Page>
-      <Pressable accessibilityRole="button" onPress={() => router.back()} style={styles.backButton}>
+      <ScalePressable accessibilityRole="button" onPress={() => router.back()} style={styles.backButton}>
         <Text style={styles.backText}>‹  Back</Text>
-      </Pressable>
+      </ScalePressable>
       <Heading title="Sign in" description="Enter your email and password to continue." />
       <View style={styles.form}>
         <FormField
@@ -88,6 +89,17 @@ export default function LoginScreen() {
           autoComplete="password"
           textContentType="password"
         />
+        <ScalePressable
+          accessibilityRole="button"
+          onPress={() =>
+            router.push({
+              pathname: '/forgot-password',
+              params: email.trim() ? { email: email.trim() } : undefined,
+            })
+          }
+          style={styles.forgotPassword}>
+          <Text style={styles.forgotPasswordText}>Forgot password?</Text>
+        </ScalePressable>
         {error ? <InlineError>{error}</InlineError> : null}
         <ActionButton
           onPress={() => void submit()}
@@ -113,5 +125,17 @@ const baseStyles = StyleSheet.create({
   },
   form: {
     gap: 16,
+  },
+  forgotPassword: {
+    minHeight: 44,
+    justifyContent: 'center',
+    alignSelf: 'flex-end',
+    paddingHorizontal: 4,
+  },
+  forgotPasswordText: {
+    color: '#8A6A96',
+    fontFamily: Fonts.sans,
+    fontSize: 14,
+    fontWeight: '700',
   },
 });

@@ -19,6 +19,9 @@ type AuthContextValue = {
   error: string | null;
   signUp: (email: string, password: string) => Promise<{ session: Session | null; user: User | null }>;
   signIn: (email: string, password: string) => Promise<{ session: Session; user: User }>;
+  sendPasswordReset: (email: string, redirectTo: string) => Promise<void>;
+  restorePasswordRecovery: (url: string) => Promise<void>;
+  updatePassword: (password: string) => Promise<void>;
   signOut: () => Promise<void>;
 };
 
@@ -36,6 +39,13 @@ function friendlyAuthError(error: unknown) {
   }
   if (normalized.includes('email not confirmed')) {
     return 'Please confirm your email before signing in. Check your inbox for the confirmation link.';
+  }
+  if (
+    normalized.includes('otp_expired') ||
+    normalized.includes('invalid token') ||
+    normalized.includes('expired')
+  ) {
+    return 'This password reset link is invalid or has expired. Request a new one and try again.';
   }
   if (
     normalized.includes('network') ||
@@ -164,6 +174,79 @@ export function AuthProvider({ children }: PropsWithChildren) {
     }
   }, []);
 
+  const sendPasswordReset = useCallback(async (email: string, redirectTo: string) => {
+    setError(null);
+    if (!supabase) {
+      setError(supabaseConfigurationError);
+      throw new Error(supabaseConfigurationError);
+    }
+    try {
+      const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo,
+      });
+      if (resetError) throw resetError;
+    } catch (resetFailure) {
+      const message = friendlyAuthError(resetFailure);
+      setError(message);
+      throw new Error(message);
+    }
+  }, []);
+
+  const restorePasswordRecovery = useCallback(async (url: string) => {
+    setError(null);
+    if (!supabase) {
+      setError(supabaseConfigurationError);
+      throw new Error(supabaseConfigurationError);
+    }
+    try {
+      const callbackUrl = new URL(url);
+      const hashParams = new URLSearchParams(callbackUrl.hash.replace(/^#/, ''));
+      const getParam = (name: string) =>
+        callbackUrl.searchParams.get(name) ?? hashParams.get(name);
+      const callbackError = getParam('error_description') ?? getParam('error');
+      if (callbackError) throw new Error(callbackError.replace(/\+/g, ' '));
+
+      const code = getParam('code');
+      if (code) {
+        const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
+        if (exchangeError) throw exchangeError;
+        return;
+      }
+
+      const accessToken = getParam('access_token');
+      const refreshToken = getParam('refresh_token');
+      if (!accessToken || !refreshToken) {
+        throw new Error('This password reset link is incomplete. Request a new one and try again.');
+      }
+
+      const { error: sessionError } = await supabase.auth.setSession({
+        access_token: accessToken,
+        refresh_token: refreshToken,
+      });
+      if (sessionError) throw sessionError;
+    } catch (recoveryFailure) {
+      const message = friendlyAuthError(recoveryFailure);
+      setError(message);
+      throw new Error(message);
+    }
+  }, []);
+
+  const updatePassword = useCallback(async (password: string) => {
+    setError(null);
+    if (!supabase) {
+      setError(supabaseConfigurationError);
+      throw new Error(supabaseConfigurationError);
+    }
+    try {
+      const { error: updateError } = await supabase.auth.updateUser({ password });
+      if (updateError) throw updateError;
+    } catch (updateFailure) {
+      const message = friendlyAuthError(updateFailure);
+      setError(message);
+      throw new Error(message);
+    }
+  }, []);
+
   const value = useMemo(
     () => ({
       session,
@@ -172,9 +255,22 @@ export function AuthProvider({ children }: PropsWithChildren) {
       error,
       signUp,
       signIn,
+      sendPasswordReset,
+      restorePasswordRecovery,
+      updatePassword,
       signOut,
     }),
-    [session, isLoading, error, signUp, signIn, signOut],
+    [
+      session,
+      isLoading,
+      error,
+      signUp,
+      signIn,
+      sendPasswordReset,
+      restorePasswordRecovery,
+      updatePassword,
+      signOut,
+    ],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

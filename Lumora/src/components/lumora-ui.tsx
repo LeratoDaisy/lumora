@@ -1,6 +1,5 @@
 import type { PropsWithChildren, ReactNode } from 'react';
 import {
-  Pressable,
   ScrollView,
   StyleSheet,
   Text,
@@ -12,6 +11,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Fonts, LumoraColors } from '@/constants/theme';
 import { useLumoraColors } from '@/contexts/appearance-context';
+import { ScalePressable } from '@/components/scale-pressable';
 
 export function Page({ children }: PropsWithChildren) {
   const colors = useLumoraColors();
@@ -99,16 +99,15 @@ export function ActionButton({
 }>) {
   const colors = useLumoraColors();
   return (
-    <Pressable
+    <ScalePressable
       accessibilityRole="button"
       onPress={onPress}
       disabled={disabled}
-      style={({ pressed }) => [
+      style={[
         styles.button,
         secondary
           ? [styles.secondaryButton, { borderColor: colors.primary }]
           : [styles.primaryButton, { backgroundColor: colors.primary }],
-        pressed && styles.pressed,
         disabled && styles.disabled,
         style,
       ]}>
@@ -119,7 +118,7 @@ export function ActionButton({
         ]}>
         {children}
       </Text>
-    </Pressable>
+    </ScalePressable>
   );
 }
 
@@ -256,9 +255,6 @@ const styles = StyleSheet.create({
   },
   secondaryButtonText: {
     color: LumoraColors.primary,
-  },
-  pressed: {
-    opacity: 0.8,
   },
   disabled: {
     opacity: 0.55,

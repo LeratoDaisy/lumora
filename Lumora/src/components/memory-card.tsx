@@ -1,7 +1,8 @@
 import { router } from 'expo-router';
-import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Image, StyleSheet, Text, View } from 'react-native';
 
 import { Card } from '@/components/lumora-ui';
+import { ScalePressable } from '@/components/scale-pressable';
 import { Fonts } from '@/constants/theme';
 import { useThemedStyles } from '@/contexts/appearance-context';
 import type { Memory } from '@/contexts/memory-context';
@@ -22,11 +23,11 @@ export function MemoryCard({
 }) {
   const styles = useThemedStyles(baseStyles);
   return (
-    <Pressable
+    <ScalePressable
       accessibilityRole="button"
       accessibilityLabel={`View memory: ${memory.title}`}
       onPress={() => router.push({ pathname: '/memory/[id]', params: { id: memory.id } })}
-      style={({ pressed }) => [pressed && styles.pressed]}>
+      scaleTo={0.98}>
       <Card style={styles.card}>
         {memory.imageUri ? (
           <Image source={{ uri: memory.imageUri }} style={styles.image} resizeMode="cover" />
@@ -51,7 +52,7 @@ export function MemoryCard({
           <Text style={styles.date}>{formatMemoryDate(memory.date)}</Text>
         </View>
       </Card>
-    </Pressable>
+    </ScalePressable>
   );
 }
 
@@ -108,8 +109,5 @@ const baseStyles = StyleSheet.create({
     color: '#6E6670',
     fontFamily: Fonts.sans,
     fontSize: 13,
-  },
-  pressed: {
-    opacity: 0.8,
   },
 });
