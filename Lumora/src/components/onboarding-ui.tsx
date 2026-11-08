@@ -1,5 +1,6 @@
 import type { PropsWithChildren } from 'react';
 import {
+  Pressable,
   StyleSheet,
   Text,
   TextInput,
@@ -10,7 +11,6 @@ import {
 import { ActionButton, Brand, Page } from '@/components/lumora-ui';
 import { Fonts, LumoraColors } from '@/constants/theme';
 import { useLumoraColors, useThemedStyles } from '@/contexts/appearance-context';
-import { ScalePressable } from '@/components/scale-pressable';
 
 export function OnboardingStep({
   step,
@@ -32,13 +32,13 @@ export function OnboardingStep({
   return (
     <Page>
       <View style={styles.top}>
-        <ScalePressable
+        <Pressable
           accessibilityRole="button"
           accessibilityLabel="Go back"
           onPress={onBack}
-          style={styles.backButton}>
+          style={({ pressed }) => [styles.backButton, pressed && styles.pressed]}>
           <Text style={styles.backText}>‹  Back</Text>
-        </ScalePressable>
+        </Pressable>
         <Brand compact />
       </View>
       <Text style={styles.stepCount}>STEP {step} OF {total}</Text>
@@ -121,17 +121,16 @@ export function CheckOption({
   const styles = useThemedStyles(baseStyles);
   return (
     <View style={styles.checkWrap}>
-      <ScalePressable
+      <Pressable
         accessibilityRole="checkbox"
         accessibilityState={{ checked }}
         onPress={onPress}
-        scaleTo={0.98}
-        style={styles.checkRow}>
+        style={({ pressed }) => [styles.checkRow, pressed && styles.pressed]}>
         <View style={[styles.checkbox, checked && styles.checkboxChecked]}>
           {checked ? <Text style={styles.checkmark}>✓</Text> : null}
         </View>
         <Text style={styles.checkLabel}>{children}</Text>
-      </ScalePressable>
+      </Pressable>
       {error ? <InlineError>{error}</InlineError> : null}
     </View>
   );
@@ -150,14 +149,14 @@ export function ChoiceCard({
 }) {
   const styles = useThemedStyles(baseStyles);
   return (
-    <ScalePressable
+    <Pressable
       accessibilityRole="radio"
       accessibilityState={{ checked: selected }}
       onPress={onPress}
-      scaleTo={0.98}
-      style={[
+      style={({ pressed }) => [
         styles.choiceCard,
         selected && styles.choiceSelected,
+        pressed && styles.pressed,
       ]}>
       <View style={styles.choiceCopy}>
         <Text style={styles.choiceTitle}>{title}</Text>
@@ -166,7 +165,7 @@ export function ChoiceCard({
       <View style={[styles.radio, selected && styles.radioSelected]}>
         {selected ? <View style={styles.radioDot} /> : null}
       </View>
-    </ScalePressable>
+    </Pressable>
   );
 }
 
@@ -355,5 +354,8 @@ const baseStyles = StyleSheet.create({
     width: 12,
     borderRadius: 6,
     backgroundColor: LumoraColors.primary,
+  },
+  pressed: {
+    opacity: 0.8,
   },
 });

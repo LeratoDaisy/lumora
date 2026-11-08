@@ -1,6 +1,6 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
-import { Alert, Image, StyleSheet, Text, View } from 'react-native';
+import { Alert, Image, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { ActionButton, Card, Heading, Page } from '@/components/lumora-ui';
 import { formatMemoryDate } from '@/components/memory-card';
@@ -8,7 +8,6 @@ import { Fonts } from '@/constants/theme';
 import { useThemedStyles } from '@/contexts/appearance-context';
 import { useMemories } from '@/contexts/memory-context';
 import { useOnboarding } from '@/contexts/onboarding-context';
-import { ScalePressable } from '@/components/scale-pressable';
 
 export default function MemoryDetailScreen() {
   const styles = useThemedStyles(baseStyles);
@@ -52,9 +51,9 @@ export default function MemoryDetailScreen() {
   if (!isLoaded) {
     return (
       <Page>
-        <ScalePressable accessibilityRole="button" onPress={() => router.back()} style={styles.backButton}>
+        <Pressable accessibilityRole="button" onPress={() => router.back()} style={styles.backButton}>
           <Text style={styles.backText}>‹  Back</Text>
-        </ScalePressable>
+        </Pressable>
         <Text style={styles.copy}>Loading your memory…</Text>
       </Page>
     );
@@ -63,9 +62,9 @@ export default function MemoryDetailScreen() {
   if (!memory || !canView) {
     return (
       <Page>
-        <ScalePressable accessibilityRole="button" onPress={() => router.back()} style={styles.backButton}>
+        <Pressable accessibilityRole="button" onPress={() => router.back()} style={styles.backButton}>
           <Text style={styles.backText}>‹  Back</Text>
-        </ScalePressable>
+        </Pressable>
         {loadError ? <Text style={styles.error}>{loadError}</Text> : null}
         <Heading title="Memory not found" description="This memory may have been removed." />
         <ActionButton secondary onPress={() => router.replace('/lightbook')}>Return to Lightbook</ActionButton>
@@ -75,9 +74,9 @@ export default function MemoryDetailScreen() {
 
   return (
     <Page>
-      <ScalePressable accessibilityRole="button" onPress={() => router.back()} style={styles.backButton}>
+      <Pressable accessibilityRole="button" onPress={() => router.back()} style={styles.backButton}>
         <Text style={styles.backText}>‹  Back</Text>
-      </ScalePressable>
+      </Pressable>
       <Heading title={memory.title} />
       {memory.imageUri ? (
         <Image source={{ uri: memory.imageUri }} style={styles.image} resizeMode="cover" />

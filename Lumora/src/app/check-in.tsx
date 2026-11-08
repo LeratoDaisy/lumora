@@ -2,6 +2,7 @@ import { router } from 'expo-router';
 import { useState } from 'react';
 import {
   ActivityIndicator,
+  Pressable,
   StyleSheet,
   Switch,
   Text,
@@ -20,7 +21,6 @@ import {
   type CheckInFeeling,
 } from '@/contexts/check-in-context';
 import { useOnboarding } from '@/contexts/onboarding-context';
-import { ScalePressable } from '@/components/scale-pressable';
 
 const feelings = Object.keys(CheckInFeelingLabels) as CheckInFeeling[];
 
@@ -36,12 +36,12 @@ export default function CheckInScreen() {
 
   return (
     <Page>
-      <ScalePressable
+      <Pressable
         accessibilityRole="button"
         onPress={() => router.back()}
         style={styles.backButton}>
         <Text style={styles.backText}>‹  Back</Text>
-      </ScalePressable>
+      </Pressable>
       <Heading
         title="How are you feeling today?"
         description="There's no right answer. Share only what feels comfortable."
@@ -106,7 +106,7 @@ function CheckInForm({
     <>
       <View style={styles.options}>
         {feelings.map((option) => (
-          <ScalePressable
+          <Pressable
             key={option}
             accessibilityRole="radio"
             accessibilityState={{ checked: feeling === option }}
@@ -115,10 +115,10 @@ function CheckInForm({
               setError('');
               setSaved(false);
             }}
-            scaleTo={0.98}
-            style={[
+            style={({ pressed }) => [
               styles.feelingOption,
               feeling === option && styles.selectedFeelingOption,
+              pressed && styles.pressed,
             ]}>
             <View style={[styles.radio, feeling === option && styles.selectedRadio]}>
               {feeling === option ? <View style={styles.radioDot} /> : null}
@@ -126,7 +126,7 @@ function CheckInForm({
             <Text style={[styles.feelingText, feeling === option && styles.selectedFeelingText]}>
               {CheckInFeelingLabels[option]}
             </Text>
-          </ScalePressable>
+          </Pressable>
         ))}
       </View>
 
@@ -213,6 +213,7 @@ const baseStyles = StyleSheet.create({
     borderColor: '#8A6A96',
     backgroundColor: '#F0E7F0',
   },
+  pressed: { opacity: 0.8 },
   radio: {
     width: 20,
     height: 20,

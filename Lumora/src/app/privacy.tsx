@@ -1,18 +1,17 @@
 import { router } from 'expo-router';
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { Card, Heading, Page, SectionLabel } from '@/components/lumora-ui';
 import { Fonts } from '@/constants/theme';
 import { useThemedStyles } from '@/contexts/appearance-context';
-import { ScalePressable } from '@/components/scale-pressable';
 
 export default function PrivacyScreen() {
   const styles = useThemedStyles(baseStyles);
   return (
     <Page>
-      <ScalePressable accessibilityRole="button" onPress={() => router.back()} style={styles.backButton}>
+      <Pressable accessibilityRole="button" onPress={() => router.back()} style={styles.backButton}>
         <Text style={styles.backText}>‹  Back</Text>
-      </ScalePressable>
+      </Pressable>
       <Heading
         title="Privacy & visibility"
         description="Your private moments stay private within Lumora."

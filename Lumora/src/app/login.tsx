@@ -1,6 +1,6 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { FormField, InlineError } from '@/components/onboarding-ui';
 import { ActionButton, Heading, Page } from '@/components/lumora-ui';
@@ -8,7 +8,6 @@ import { Fonts } from '@/constants/theme';
 import { useThemedStyles } from '@/contexts/appearance-context';
 import { useAuth } from '@/contexts/auth-context';
 import { useOnboarding } from '@/contexts/onboarding-context';
-import { ScalePressable } from '@/components/scale-pressable';
 
 export default function LoginScreen() {
   const styles = useThemedStyles(baseStyles);
@@ -58,9 +57,9 @@ export default function LoginScreen() {
 
   return (
     <Page>
-      <ScalePressable accessibilityRole="button" onPress={() => router.back()} style={styles.backButton}>
+      <Pressable accessibilityRole="button" onPress={() => router.back()} style={styles.backButton}>
         <Text style={styles.backText}>‹  Back</Text>
-      </ScalePressable>
+      </Pressable>
       <Heading title="Sign in" description="Enter your email and password to continue." />
       <View style={styles.form}>
         <FormField
@@ -89,7 +88,7 @@ export default function LoginScreen() {
           autoComplete="password"
           textContentType="password"
         />
-        <ScalePressable
+        <Pressable
           accessibilityRole="button"
           onPress={() =>
             router.push({
@@ -99,7 +98,7 @@ export default function LoginScreen() {
           }
           style={styles.forgotPassword}>
           <Text style={styles.forgotPasswordText}>Forgot password?</Text>
-        </ScalePressable>
+        </Pressable>
         {error ? <InlineError>{error}</InlineError> : null}
         <ActionButton
           onPress={() => void submit()}

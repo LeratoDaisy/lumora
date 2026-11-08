@@ -1,10 +1,9 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Alert, StyleSheet, Text, View } from 'react-native';
+import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { ActionButton, Card, Heading, Page, SectionLabel } from '@/components/lumora-ui';
 import { Fonts } from '@/constants/theme';
-import { ScalePressable } from '@/components/scale-pressable';
 import { useAuth } from '@/contexts/auth-context';
 import { useAppearance, useThemedStyles } from '@/contexts/appearance-context';
 import { useOnboarding } from '@/contexts/onboarding-context';
@@ -119,17 +118,16 @@ function NavigationRow({
 }) {
   const styles = useThemedStyles(baseStyles);
   return (
-    <ScalePressable
+    <Pressable
       accessibilityRole="button"
       onPress={onPress}
-      scaleTo={0.98}
-      style={styles.row}>
+      style={({ pressed }) => [styles.row, pressed && styles.pressed]}>
       <View style={styles.rowCopy}>
         <Text style={styles.rowTitle}>{title}</Text>
         <Text style={styles.rowDescription}>{description}</Text>
       </View>
       <Text style={styles.chevron}>›</Text>
-    </ScalePressable>
+    </Pressable>
   );
 }
 
@@ -185,6 +183,9 @@ const baseStyles = StyleSheet.create({
     color: '#8A6A96',
     fontFamily: Fonts.sans,
     fontSize: 24,
+  },
+  pressed: {
+    opacity: 0.8,
   },
   error: {
     color: '#B64B58',

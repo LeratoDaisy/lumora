@@ -1,14 +1,13 @@
 import * as Linking from 'expo-linking';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useRef, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { ActionButton, Card, Heading, Page } from '@/components/lumora-ui';
 import { FormField, InlineError } from '@/components/onboarding-ui';
 import { Fonts } from '@/constants/theme';
 import { useThemedStyles } from '@/contexts/appearance-context';
 import { useAuth } from '@/contexts/auth-context';
-import { ScalePressable } from '@/components/scale-pressable';
 
 export default function ForgotPasswordScreen() {
   const styles = useThemedStyles(baseStyles);
@@ -49,7 +48,7 @@ export default function ForgotPasswordScreen() {
 
   return (
     <Page>
-      <ScalePressable
+      <Pressable
         accessibilityRole="button"
         onPress={() =>
           router.replace({
@@ -59,7 +58,7 @@ export default function ForgotPasswordScreen() {
         }
         style={styles.backButton}>
         <Text style={styles.backText}>‹  Back to sign in</Text>
-      </ScalePressable>
+      </Pressable>
       <Heading
         title="Forgot password?"
         description="Enter the email address linked to your Lumora account and we’ll send a reset link."
