@@ -1,56 +1,235 @@
-# Welcome to your Expo app 👋
+# Lumora
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+> **Through every moment, keep the light.**
 
-## Get started
+Lumora is a private mobile support and memory-preservation application designed for people and families navigating illness together.
 
-1. Install dependencies
+It provides a safe shared space where patients, family members, and invited caregivers can support one another, record meaningful moments, complete daily check-ins, and preserve memories.
 
-   ```bash
-   npm install
-   ```
+Lumora is **not a medical, hospital, or social-media application**. It focuses on emotional support, family connection, coping, and preserving meaningful moments.
 
-2. Start the app
+## Features
 
-   ```bash
-   npx expo start
-   ```
+- User registration and login with Supabase Authentication
+- Role-based experiences for:
+  - Patient
+  - Family Member
+  - Caregiver
+- Private Lumora Spaces for invited members
+- **Lightbook** for recording meaningful moments
+  - Title
+  - Caption
+  - Occasion
+  - Location
+  - Date
+  - Photo
+  - Private or shared visibility
+- Shared family timeline
+- Daily emotional check-ins
+- Reactions and comments on shared content
+- Role-aware support and coping information
+- Profile and privacy settings
+- Theme preferences
+- Sign out
+- Persistent backend data using Supabase
 
-In the output, you'll find options to open the app in a
+## Technology Stack
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+- **React Native**
+- **Expo**
+- **Expo Router**
+- **TypeScript**
+- **Supabase**
+  - Authentication
+  - PostgreSQL database
+  - Row Level Security (RLS)
+- **React Native Web** for the web version
 
-You can start developing by editing the files inside the **src/app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+## Project Structure
 
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
+```text
+Lumora/
+├── src/
+│   ├── app/
+│   │   ├── (tabs)/
+│   │   ├── comments/
+│   │   └── ...
+│   ├── components/
+│   └── lib/
+├── assets/
+├── IMPLEMENTATION_PLAN.md
+├── package.json
+├── package-lock.json
+├── tsconfig.json
+├── .env.example
+└── README.md
 ```
 
-This command will move the starter code to the **example** directory and create a blank **src/app** directory where you can start developing.
+## Installation
 
-### Other setup steps
+### Prerequisites
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+Make sure you have:
 
-## Learn more
+- Node.js installed
+- npm installed
+- Expo CLI available through the project dependencies
+- A Supabase project
 
-To learn more about developing your project with Expo, look at the following resources:
+### 1. Clone the repository
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+```bash
+git clone <YOUR_GITHUB_REPOSITORY_URL>
+cd Lumora
+```
 
-## Join the community
+### 2. Install dependencies
 
-Join our community of developers creating universal apps.
+```bash
+npm install
+```
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+### 3. Configure environment variables
+
+Create a `.env` file in the project root.
+
+Add:
+
+```env
+EXPO_PUBLIC_SUPABASE_URL=your_supabase_project_url
+EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY=your_supabase_publishable_key
+```
+
+These values are available from the Supabase project settings/API keys.
+
+**Do not add Supabase secret/service-role keys to the application or commit them to GitHub.**
+
+### 4. Start the application
+
+Start Expo with:
+
+```bash
+npx expo start
+```
+
+Then choose the platform you want to use.
+
+### Web
+
+```bash
+npx expo start --web
+```
+
+### Android
+
+```bash
+npx expo start --android
+```
+
+### iOS
+
+```bash
+npx expo start --ios
+```
+
+## Environment Variables
+
+| Variable | Purpose |
+|---|---|
+| `EXPO_PUBLIC_SUPABASE_URL` | URL of the Lumora Supabase project |
+| `EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Supabase publishable API key used by the client |
+
+Only the publishable key should be exposed to the client application. Database access is protected through Supabase authentication and Row Level Security policies.
+
+## Database
+
+Lumora uses Supabase for persistent application data.
+
+The main tables include:
+
+- `profiles`
+- `lumora_spaces`
+- `space_members`
+- `memories`
+- `check_ins`
+- `comments`
+- `reactions`
+
+User authentication is handled through Supabase Auth.
+
+## Test Login
+
+### Test Account
+
+Use the following account for demonstration/testing:
+
+```text
+Email: <TEST_ACCOUNT_EMAIL>
+Password: <TEST_ACCOUNT_PASSWORD>
+Role: Patient
+```
+
+> Replace the placeholders above with the test account created for the demonstration before submitting the repository.
+
+If a test account has not been created, create one through the application's registration flow and use those credentials for the evaluation.
+
+## Testing
+
+TypeScript can be checked with:
+
+```bash
+npx tsc --noEmit
+```
+
+The project also uses Expo's development tooling for validation.
+
+## Implementation
+
+Lumora was developed incrementally according to the project's implementation plan.
+
+The development process was divided into phases covering:
+
+1. Project foundation
+2. Application onboarding and navigation
+3. Core Lumora experiences
+4. Lightbook and meaningful moments
+5. Daily check-ins and support
+6. Backend integration
+7. Authentication and persistent data
+8. Final testing and refinement
+
+The detailed implementation process is documented in:
+
+```text
+IMPLEMENTATION_PLAN.md
+```
+
+## Privacy & Permissions
+
+Lumora is designed around private spaces and role-based access.
+
+Patients control their Lumora Space and invitations. Family members can participate according to their permissions, while caregivers have a more limited invited role.
+
+Private content is intended to remain accessible only to the appropriate user, while shared content can appear in the shared family experience.
+
+Supabase Row Level Security is used to protect database access.
+
+## Current Scope
+
+Lumora focuses on the core experience required for the project demonstration:
+
+- Authentication
+- Lumora Spaces
+- Role-based experiences
+- Lightbook
+- Shared timeline
+- Daily check-ins
+- Support resources
+- Persistent Supabase data
+- Privacy and access controls
+
+Future development could include additional production hardening, expanded testing, and further accessibility and platform-specific refinements.
+
+---
+
+**Lumora — Through every moment, keep the light.**
